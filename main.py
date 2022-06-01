@@ -13,7 +13,6 @@ if __name__ == '__main__':
 
     start = time.process_time()
     print(start)
-
     FEATRUE = "sex"
     TAG_A = " Male"
     TAG_B = " Female"
@@ -21,11 +20,9 @@ if __name__ == '__main__':
     num_samples = 1
     datasets_number = 1     # (TRAIN_POSITIVE_NUM + TRAIN_NEGITIVE_NUM) * datasets_number   0.5  1  3  5  10  20
     k = 10      # iter_number
-
     TRAIN_POSITIVE_NUM = 9000   # proportion
     TRAIN_NEGITIVE_NUM = 3000
     mutl = "1_3"
-
     META_BATCH_SIZE = 32
     EPOCHS = 40
     LR = 0.0001
@@ -39,19 +36,15 @@ if __name__ == '__main__':
     x_test, y_test = dataClean(data_test, False)
     test_loader = torch.utils.data.DataLoader(torch.utils.data.TensorDataset(x_test, y_test),
                                               batch_size=META_BATCH_SIZE)
-
     models_normal = []
     model = Dedend_Net()
-
     index = 1
     index_2 = 1
 
     print(f"{index} th")
-
     # father model
     model.__init__()
     optimizer = optim.Adam(model.parameters(), lr=LR, weight_decay=weightdecay)
-
     x_train, y_train = dataClean(data_train, True, TRAIN_POSITIVE_NUM, TRAIN_NEGITIVE_NUM)
     train_loader = torch.utils.data.DataLoader(torch.utils.data.TensorDataset(x_train, y_train),
                                                batch_size=META_BATCH_SIZE, shuffle=True)
@@ -67,12 +60,9 @@ if __name__ == '__main__':
         #  son datasets
         #  Range of values Dataset
 
-        # data_shadow = create_shadow_data(int((TRAIN_POSITIVE_NUM + TRAIN_NEGITIVE_NUM) * datasets_number))
-        # x_train_shadow, y_train_shadow = datafilter(data_shadow, model)
-        # range_train_loader = torch.utils.data.DataLoader(torch.utils.data.TensorDataset(x_train_shadow, y_train_shadow), batch_size=META_BATCH_SIZE, shuffle=True)
-
-        range_train_loader = torch.utils.data.DataLoader(torch.utils.data.TensorDataset(x_train, y_train),
-                                                         batch_size=META_BATCH_SIZE, shuffle=True)
+        data_shadow = create_shadow_data(int((TRAIN_POSITIVE_NUM + TRAIN_NEGITIVE_NUM) * datasets_number))
+        x_train_shadow, y_train_shadow = datafilter(data_shadow, model)
+        range_train_loader = torch.utils.data.DataLoader(torch.utils.data.TensorDataset(x_train_shadow, y_train_shadow), batch_size=META_BATCH_SIZE, shuffle=True)
 
         # son model
         model.__init__()
@@ -85,9 +75,7 @@ if __name__ == '__main__':
         end = time.process_time()
         print(end - start)
         print()
-
     index += 1
-
 
     # file = open('datasets/sex/Female_Male_UScensus_models_' + mutl + '_create_1_1_number_' + str(TRAIN_POSITIVE_NUM) + '_' + str(TRAIN_NEGITIVE_NUM) + '_' + str(int(datasets_number * (TRAIN_POSITIVE_NUM + TRAIN_NEGITIVE_NUM))) + '_iter_' + str(k) + '_' + str(FEATRUE), 'wb')
     # cp.dump(models_normal, file)
