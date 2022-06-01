@@ -16,7 +16,6 @@ def create_shadow_data(k):
                'fill inc questionnaire for veterans admin', 'veterans benefits', 'weeks worked in year',
                'year', 'income']
     # print(len(columns)) # 41+1 = 42
-
     age = 0 - 90
     class_of_worker = [' Not in universe', ' Federal government', ' Local government', ' Never worked', 'Private',
                        ' Self-employed-incorporated', ' Self-employed-not incorporated',
@@ -155,11 +154,8 @@ def create_shadow_data(k):
     veterans_benefits = [0, 2, 1]
     weeks_worked_in_year = 0 - 52
     year = [94, 95]
-
     income = ['-50000', ' 50000+.']
-
     datasets = []
-
     for i in range(k):
         datasets.append([random.randint(0, 90), random.choice(class_of_worker), random.choice(detailed_industry_recode),
                          random.choice(detailed_occupation_recode), random.choice(education),
@@ -188,18 +184,13 @@ def create_shadow_data(k):
     df = pd.DataFrame(datasets, columns=columns)
     return df
 
-
 def datafilter(data, model):
     with torch.no_grad():
         model.eval()
         # # print(model.fc4.weight[0][0])
         data_A = data[data[FEATRUE] == TAG_A]  # Separate dataframe into both classes
         data_B = data[data[FEATRUE] == TAG_B]
-        # print(data_A.shape)
-        # print(data_B.shape)
         # print("Shadow-datasets: {} + {} = {}".format(data_A.shape, data_B.shape, data_A.shape + data_B.shape))
-
-        # data[FEATRUE] = " ?"
 
         # NORMALIZE CONTINUOUS FEATURES
         # Make a list of all continous features
@@ -222,12 +213,10 @@ def datafilter(data, model):
         data_categorical = data[cat_feats]
 
         normalized_data = data_cont.copy()
-
         for feature in cont_feats:
             mean = data_cont[feature].mean()
             std = data_cont[feature].std()
             normalized_data[feature] = (data_cont[feature] - mean) / std
-
         data_cont = normalized_data
         # data_cont.drop('instance weight', axis=1, inplace=True)  # get rid of 'instance weight' column from dataframe
         data_cont = data_cont.values  # Turn it into a numpy array
@@ -235,22 +224,17 @@ def datafilter(data, model):
         # ENCODE CATEGORICAL FEATURES
         label_encoder = LabelEncoder()
         encoded_data = data_categorical.copy()
-
         for feature in cat_feats:
             label_encoder.fit(data_categorical[feature])
             encoded_data[feature] = label_encoder.transform(data_categorical[feature])
-
         data_categorical = encoded_data
-
         data_income = data_categorical["income"]
         data_income = data_income.values  # Turn into a numpy array
         data_categorical.drop('income', axis=1, inplace=True)  # get rid of 'income' column from dataframe
         processed_data = np.concatenate((data_cont, data_categorical), axis=1)
         # print(data_income.sum())
-
         x_CompositeDatas = torch.Tensor(processed_data)
         # y_CompositeDatas = torch.Tensor(data_income)
-
         prediction = model(x_CompositeDatas)
         pred = prediction.data.max(1, keepdim=True)[1]
         # print(pred.sum())
