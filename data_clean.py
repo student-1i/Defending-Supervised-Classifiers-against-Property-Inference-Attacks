@@ -1,18 +1,12 @@
 def dataClean(data, is_TrainSet=False, x=0, y=0):
-
     data_A = data[data[FEATRUE] == TAG_A]  # Separate dataframe into both classes
     data_B = data[data[FEATRUE] == TAG_B]
-
     if is_TrainSet == True:
         data_A = data_A.sample(n=x)  # sample to get same amount, no set random_state  is random,10000
         data_B = data_B.sample(n=y)
         print("Trainset number:{} + {} = {}".format(x, y, x + y))
-
     data = pd.concat([data_A, data_B], axis=0)
     data = data.sample(frac=1).reset_index(drop=True)
-
-    # data[FEATRUE] = " ?"
-
 
     # NORMALIZE CONTINUOUS FEATURES
     # Make a list of all continous features
@@ -29,10 +23,8 @@ def dataClean(data, is_TrainSet=False, x=0, y=0):
                  'family members under 18', 'country of birth father', 'country of birth mother',
                  'country of birth self', 'citizenship', 'own business or self employed',
                  'fill inc questionnaire for veterans admin', 'veterans benefits', 'year', 'income']
-
     data_cont = data[cont_feats]  # 2 new dataframes for continuous and categorical features
     data_categorical = data[cat_feats]
-
     normalized_data = data_cont.copy()
 
     for feature in cont_feats:
@@ -51,12 +43,9 @@ def dataClean(data, is_TrainSet=False, x=0, y=0):
     for feature in cat_feats:
         label_encoder.fit(data_categorical[feature])
         encoded_data[feature] = label_encoder.transform(data_categorical[feature])
-
     data_categorical = encoded_data
-
     data_income = data_categorical["income"]
     data_income = data_income.values
-
     data_categorical.drop('income', axis=1, inplace=True)  # get rid of 'income' column from dataframe
     processed_data = np.concatenate((data_cont, data_categorical), axis=1)
 
