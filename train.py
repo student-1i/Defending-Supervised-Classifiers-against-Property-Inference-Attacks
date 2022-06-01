@@ -3,18 +3,15 @@ def train(model, optimizer, train_loader):
     for batch_idx, (data, target) in enumerate(train_loader):
         optimizer.zero_grad()
         output = model(data)
-
         loss = F.nll_loss(output, target)
         loss.backward()
         optimizer.step()
-
     if epoch % 10 == 0:
         print('Train Epoch: {} [{}/{} ({:.0f}%)]\t Loss: {:.4f}'.format(epoch, batch_idx * len(data),
                                                                         len(train_loader.dataset),
                                                                         100. * batch_idx / len(train_loader),
                                                                         loss.item()))
     return loss.item()
-
 
 def test(model, test_loader):
     with torch.no_grad():
